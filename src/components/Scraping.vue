@@ -39,7 +39,7 @@ export default {
 
       try {
         const response = await axios.get<ScrapingResult>(
-          "http://localhost:3000/api/scrape",
+          "https://scrappfilms.onrender.com/api/scrape",
           {
             params: { url: url.value },
           }

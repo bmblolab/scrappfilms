@@ -1,50 +1,25 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
-import axios from "axios";
-import * as cheerio from "cheerio";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
-// Ruta para realizar scraping
-app.get("/api/scrape", async (req, res) => {
-  const { url } = req.query;
-
-  if (!url) {
-    return res.status(400).json({ error: "Falta la URL en la solicitud." });
-  }
-
+// Ruta de ejemplo para manejar solicitudes
+app.get("/api/scrape", async (req: Request, res: Response) => {
   try {
-    // Obtener el contenido HTML
-    const response = await axios.get(url as string);
-    const html = response.data;
+    // Simulación de scraping (sustituye con tu lógica real)
+    const data = { subscription: "Suscripción", platforms: ["Netflix", "Max"] };
 
-    // Cargar el HTML en Cheerio
-    const $ = cheerio.load(html);
-
-    // Extraer datos
-    const subscriptionBlock = $("div.sub-title").text().trim();
-    const platforms: string[] = [];
-    $("div.sub-title ~ a[target='_blank']").each((_, el) => {
-      const title = $(el).attr("title");
-      if (title) platforms.push(title);
-    });
-
-    // Devolver los datos como JSON
-    res.json({
-      subscription: subscriptionBlock,
-      platforms,
-    });
+    res.status(200).json(data);
   } catch (error) {
-    console.error("Error durante el scraping:", error);
-    res.status(500).json({ error: "Error al realizar el scraping." });
+    res.status(500).json({ message: "Error en el servidor", error });
   }
 });
 
-// Iniciar el servidor
+// Inicia el servidor
+const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
