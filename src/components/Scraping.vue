@@ -15,17 +15,22 @@
     <div v-if="error" style="color: red">Error: {{ error }}</div>
   </div>
 </template>
-
 <script lang="ts">
 import { ref } from "vue";
 import axios from "axios";
 
+// Define la interfaz para los datos de scraping
+interface ScrapingResult {
+  subscription: string;
+  platforms: string[];
+}
+
 export default {
   setup() {
-    const url = ref("");
-    const loading = ref(false);
-    const data = ref(null);
-    const error = ref(null);
+    const url = ref<string>(""); // El URL ingresado por el usuario
+    const loading = ref<boolean>(false); // Estado de carga
+    const data = ref<ScrapingResult | null>(null); // Datos del scraping
+    const error = ref<string | null>(null); // Mensaje de error
 
     const scrape = async () => {
       loading.value = true;
@@ -33,12 +38,15 @@ export default {
       data.value = null;
 
       try {
-        const response = await axios.get("http://localhost:3000/api/scrape", {
-          params: { url: url.value },
-        });
-        data.value = response.data;
-      } catch (err) {
-        error.value = err.message;
+        const response = await axios.get<ScrapingResult>(
+          "http://localhost:3000/api/scrape",
+          {
+            params: { url: url.value },
+          }
+        );
+        data.value = response.data; // TypeScript ahora reconoce las propiedades
+      } catch (err: any) {
+        error.value = err.message || "Error desconocido";
       } finally {
         loading.value = false;
       }
